@@ -21,6 +21,7 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
     public User registerNewUser(User user){
+        System.out.println(user);
        Role role = roleDao.findById("User").get();
 
        Set<Role> roles = new HashSet<>();
