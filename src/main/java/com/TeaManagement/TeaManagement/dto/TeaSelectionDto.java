@@ -14,10 +14,8 @@ import java.time.LocalDateTime;
 @ToString
 public class TeaSelectionDto {
 
-    private int selectionId;
-    private LocalDateTime localDateTime;
-    private User user;
-    private TeaOptions teaOptions;
+    private String empNo;
+    private int beverageId;
     private Teatime teatime;
 
 }

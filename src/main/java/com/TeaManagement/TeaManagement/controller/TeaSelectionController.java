@@ -2,7 +2,10 @@ package com.TeaManagement.TeaManagement.controller;
 
 import com.TeaManagement.TeaManagement.dto.TeaSelectionDto;
 import com.TeaManagement.TeaManagement.service.TeaSelectionService;
+import com.TeaManagement.TeaManagement.util.StandardResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,9 +19,8 @@ public class TeaSelectionController {
 
     @PostMapping("/selectTeaOption")
     @PreAuthorize("hasRole('User')")
-    public String selectTeaOption(@RequestBody TeaSelectionDto teaSelectionDto){
-        teaSelectionService.saveTeaSelectionOption(teaSelectionDto);
-        return "record saved successfully.";
-
+    public ResponseEntity<StandardResponse> selectTeaOption(@RequestBody TeaSelectionDto teaSelectionDto){
+        String selectTea = teaSelectionService.saveTeaSelectionOption(teaSelectionDto);
+        return new ResponseEntity<>(new StandardResponse(201, "Success", selectTea), HttpStatus.CREATED);
     }
 }

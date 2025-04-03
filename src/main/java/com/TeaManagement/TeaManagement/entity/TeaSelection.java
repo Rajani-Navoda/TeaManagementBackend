@@ -1,6 +1,7 @@
 package com.TeaManagement.TeaManagement.entity;
 
 import com.TeaManagement.TeaManagement.entity.enums.Teatime;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -15,7 +16,7 @@ public class TeaSelection {
 
     @Id
     @Column(name = "selection_id", length=45)
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int selectionId;
 
     @Column(name = "selection_time")
@@ -23,6 +24,7 @@ public class TeaSelection {
 
 
     @ManyToOne(cascade = CascadeType.ALL)
+    @JsonIgnore
     @JoinColumn(name = "employee_no", referencedColumnName = "emp_no")
     private User user;
 
@@ -33,5 +35,10 @@ public class TeaSelection {
     @Enumerated(EnumType.STRING)
     @Column(name = "tea_time")
     private Teatime teatime;
+
+    @PrePersist
+    public void prePersist(){
+        this.localDateTime = LocalDateTime.now();
+    }
 
 }

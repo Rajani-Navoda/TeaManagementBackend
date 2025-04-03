@@ -1,8 +1,13 @@
 package com.TeaManagement.TeaManagement.service.impl;
 
+import com.TeaManagement.TeaManagement.dao.TeaOptionsDao;
 import com.TeaManagement.TeaManagement.dao.TeaSelectionDao;
+import com.TeaManagement.TeaManagement.dao.UserDao;
+import com.TeaManagement.TeaManagement.dto.TeaOptionsDto;
 import com.TeaManagement.TeaManagement.dto.TeaSelectionDto;
+import com.TeaManagement.TeaManagement.entity.TeaOptions;
 import com.TeaManagement.TeaManagement.entity.TeaSelection;
+import com.TeaManagement.TeaManagement.entity.User;
 import com.TeaManagement.TeaManagement.service.TeaSelectionService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,20 +22,29 @@ public class TeaSelectionImpl implements TeaSelectionService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private UserDao userDao;
+
+    @Autowired
+    private TeaOptionsDao teaOptionsDao;
+
     @Override
     public String saveTeaSelectionOption(TeaSelectionDto teaSelectionDto) {
 
-        TeaSelection teaSelection = modelMapper.map(teaSelectionDto,TeaSelection.class);
+        User user = userDao.findById(teaSelectionDto.getEmpNo()).orElseThrow(()->
+                new RuntimeException("user not found with empNo:"+ teaSelectionDto.getEmpNo()));
 
-        if(!teaSelectionDao.existsById(teaSelection.getSelectionId())){
-            teaSelectionDao.save(teaSelection);
-            return teaSelection.getUser().getEmpName() + "Order for" +
-                    teaSelection.getTeaOptions().getBeverageName() +
-                    "recorded successfully.";
-        }
-        else{
-            throw new DuplicateKeyException("Already added");
-        }
+        TeaOptions teaOptions = teaOptionsDao.findById(teaSelectionDto.getBeverageId())
+                .orElseThrow(() -> new RuntimeException("Tea Option not found with beverageId: "
+                        + teaSelectionDto.getBeverageId()));
+
+        TeaSelection teaSelection = new TeaSelection();
+        teaSelection.setUser(user);
+        teaSelection.setTeaOptions(teaOptions);
+        teaSelection.setTeatime(teaSelectionDto.getTeatime());
+
+        teaSelectionDao.save(teaSelection);
+        return user.getEmpName() + " Order for " + teaOptions.getBeverageName() + " recorded successfully.";
 
     }
 }
