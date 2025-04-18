@@ -3,10 +3,7 @@ package com.TeaManagement.TeaManagement.service.impl;
 import com.TeaManagement.TeaManagement.dao.TeaOptionsDao;
 import com.TeaManagement.TeaManagement.dao.TeaSelectionDao;
 import com.TeaManagement.TeaManagement.dao.UserDao;
-import com.TeaManagement.TeaManagement.dto.CountByBeverageDto;
-import com.TeaManagement.TeaManagement.dto.CountByDepartmentDto;
-import com.TeaManagement.TeaManagement.dto.TeaOptionsDto;
-import com.TeaManagement.TeaManagement.dto.TeaSelectionDto;
+import com.TeaManagement.TeaManagement.dto.*;
 import com.TeaManagement.TeaManagement.entity.TeaOptions;
 import com.TeaManagement.TeaManagement.entity.TeaSelection;
 import com.TeaManagement.TeaManagement.entity.User;
@@ -25,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.TeaManagement.TeaManagement.entity.enums.Teatime.*;
 
 @Service
 public class TeaSelectionImpl implements TeaSelectionService {
@@ -125,5 +124,28 @@ public class TeaSelectionImpl implements TeaSelectionService {
         return result;
     }
 
+    @Override
+    public ActiveSessionDto getCurrentSessionStatus() {
+        LocalDateTime now = LocalDateTime.now();
+        int currentMinutes = now.getHour() * 60 + now.getMinute();
+
+        int morningStart = 8 * 60;
+        int morningEnd = 10 * 60 + 30;
+
+        int eveningStart = 15 * 60;
+        int eveningEnd = 16 * 60 + 30;
+
+        if (currentMinutes >= morningStart && currentMinutes <= morningEnd) {
+            LocalDateTime endTime = now.withHour(12).withMinute(30).withSecond(0).withNano(0);
+            long remaining = java.time.Duration.between(now, endTime).getSeconds();
+            return new ActiveSessionDto(true, Teatime.MORNING, remaining);
+        } else if (currentMinutes >= eveningStart && currentMinutes <= eveningEnd) {
+            LocalDateTime endTime = now.withHour(16).withMinute(30).withSecond(0).withNano(0);
+            long remaining = java.time.Duration.between(now, endTime).getSeconds();
+            return new ActiveSessionDto(true, Teatime.EVENING, remaining);
+        } else {
+            return new ActiveSessionDto(false, Teatime.NONE, 0L);
+        }
+    }
 
 }

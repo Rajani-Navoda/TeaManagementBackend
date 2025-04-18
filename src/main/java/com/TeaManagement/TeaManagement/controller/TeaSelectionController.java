@@ -1,5 +1,6 @@
 package com.TeaManagement.TeaManagement.controller;
 
+import com.TeaManagement.TeaManagement.dto.ActiveSessionDto;
 import com.TeaManagement.TeaManagement.dto.CountByBeverageDto;
 import com.TeaManagement.TeaManagement.dto.CountByDepartmentDto;
 import com.TeaManagement.TeaManagement.dto.TeaSelectionDto;
@@ -48,6 +49,15 @@ public class TeaSelectionController {
     @PreAuthorize("hasRole('Admin')")
     public List<CountByDepartmentDto> getSessionCountByDepartmentSAndBeverage (@RequestParam(value="teaTime") Teatime teaTime){
         return teaSelectionService.countByDepartmentSAndBeverage(teaTime);
+    }
+
+    @GetMapping(
+            path = "/current-session-status"
+    )
+    @PreAuthorize("hasAnyRole('Admin','User')")
+    public ActiveSessionDto getCurrentSessionStatus(){
+        ActiveSessionDto status = teaSelectionService.getCurrentSessionStatus();
+        return status;
     }
 
 }

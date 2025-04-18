@@ -1,5 +1,6 @@
 package com.TeaManagement.TeaManagement.service;
 
+import com.TeaManagement.TeaManagement.dto.ActiveSessionDto;
 import com.TeaManagement.TeaManagement.dto.CountByBeverageDto;
 import com.TeaManagement.TeaManagement.dto.CountByDepartmentDto;
 import com.TeaManagement.TeaManagement.dto.TeaSelectionDto;
@@ -15,4 +16,6 @@ public interface TeaSelectionService {
     public List<CountByBeverageDto> countByBeverages(Teatime teaTime);
 
     public List<CountByDepartmentDto> countByDepartmentSAndBeverage(Teatime teatime);
+
+    public ActiveSessionDto getCurrentSessionStatus();
 }
