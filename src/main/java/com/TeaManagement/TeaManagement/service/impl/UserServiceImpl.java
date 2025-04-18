@@ -3,6 +3,7 @@ package com.TeaManagement.TeaManagement.service.impl;
 import com.TeaManagement.TeaManagement.dao.RoleDao;
 import com.TeaManagement.TeaManagement.dao.UserDao;
 import com.TeaManagement.TeaManagement.dto.DepartmentDto;
+import com.TeaManagement.TeaManagement.dto.EmployeeDto;
 import com.TeaManagement.TeaManagement.entity.Role;
 import com.TeaManagement.TeaManagement.entity.User;
 import com.TeaManagement.TeaManagement.service.UserService;
@@ -56,12 +57,49 @@ public class UserServiceImpl implements UserService {
         adminUser.setRole(adminRoles);
         userDao.save(adminUser);
 
-
     }
 
     public String getEncodedPassword(String password){
         return passwordEncoder.encode(password);
     }
 
+    @Override
+    public EmployeeDto updateEmployee(String empNo, EmployeeDto employeeDto) {
+        User existingUser = userDao.findById(empNo)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        existingUser.setEmpName(employeeDto.getEmpName());
+        existingUser.setEmpDepartment(employeeDto.getEmpDepartment());
+        existingUser.setEmpEmail(employeeDto.getEmpEmail());
+
+        if (employeeDto.getEmpPassword() != null && !employeeDto.getEmpPassword().isEmpty()) {
+            existingUser.setEmpPassword(getEncodedPassword(employeeDto.getEmpPassword()));
+        }
+
+        User updatedUser = userDao.save(existingUser);
+
+        return convertToDto(updatedUser);
+    }
+
+    @Override
+    public String deleteCustomer(String empNo) {
+        if(userDao.existsById(empNo)){
+            userDao.deleteById(empNo);
+            return "Employee "+ empNo +  " deleted successfully";
+        }else{
+            throw new RuntimeException("Employee not found");
+        }
+    }
+
+
+    private EmployeeDto convertToDto(User user) {
+        EmployeeDto dto = new EmployeeDto();
+        dto.setEmpNo(user.getEmpNo());
+        dto.setEmpName(user.getEmpName());
+        dto.setEmpDepartment(user.getEmpDepartment());
+        dto.setEmpEmail(user.getEmpEmail());
+        dto.setEmpPassword(user.getEmpPassword());
+        return dto;
+    }
 
 }

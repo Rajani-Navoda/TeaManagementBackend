@@ -50,8 +50,4 @@ public class TeaSelectionController {
         return teaSelectionService.countByDepartmentSAndBeverage(teaTime);
     }
 
-
-
-
-
 }

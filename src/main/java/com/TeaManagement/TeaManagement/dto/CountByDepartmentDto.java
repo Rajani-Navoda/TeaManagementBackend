@@ -18,4 +18,6 @@ public class CountByDepartmentDto {
         this.deptName = deptName;
         this.beverageCount = beverageCount;
     }
+
+
 }

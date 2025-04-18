@@ -1,6 +1,7 @@
 package com.TeaManagement.TeaManagement.controller;
 
 import com.TeaManagement.TeaManagement.dto.DepartmentDto;
+import com.TeaManagement.TeaManagement.dto.EmployeeDto;
 import com.TeaManagement.TeaManagement.dto.TeaOptionsDto;
 import com.TeaManagement.TeaManagement.entity.User;
 import com.TeaManagement.TeaManagement.service.UserService;
@@ -41,6 +42,24 @@ public class UserController {
     public String forUser(){
         return "this URL only accessible to the employee";
     }
+
+    @PutMapping("/update-employee/{empNo}")
+    @PreAuthorize("hasRole('Admin')")
+    public EmployeeDto updateEmployee(
+            @PathVariable String empNo,
+            @RequestBody EmployeeDto employeeDto
+    ) {
+        return userService.updateEmployee(empNo, employeeDto);
+    }
+
+    @DeleteMapping("/delete-Employee/{empNo}")
+    @PreAuthorize("hasRole('Admin')")
+    public String deleteEmployee(@PathVariable(value = "empNo") String empNo){
+        String deletedCustomer = userService.deleteCustomer(empNo);
+        return deletedCustomer;
+    }
+
+
 
 
 }
