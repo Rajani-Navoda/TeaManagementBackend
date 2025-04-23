@@ -18,4 +18,6 @@ public interface TeaSelectionDao extends JpaRepository<TeaSelection, Integer> {
 
     List<TeaSelection> findAllByTeatimeAndLocalDateTimeBetween(Teatime teatime, LocalDateTime startOfDay, LocalDateTime endOfDay);
 
+    List<TeaSelection> findAllByLocalDateTimeBetween(LocalDateTime start, LocalDateTime end);
+
 }

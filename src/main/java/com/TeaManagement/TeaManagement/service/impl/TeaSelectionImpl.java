@@ -17,13 +17,11 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Month;
+import java.time.temporal.TemporalAdjusters;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.TeaManagement.TeaManagement.entity.enums.Teatime.*;
 
 @Service
 public class TeaSelectionImpl implements TeaSelectionService {
@@ -146,6 +144,81 @@ public class TeaSelectionImpl implements TeaSelectionService {
         } else {
             return new ActiveSessionDto(false, Teatime.NONE, 0L);
         }
+    }
+
+    @Override
+    public List<CostByDepartmentDto> getMonthlyCostByDepartment(String month, int year) {
+        int monthValue;
+        try {
+            monthValue = Month.valueOf(month.toUpperCase()).getValue();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid month: " + month);
+        }
+
+        LocalDate startDate = LocalDate.of(year, monthValue, 1);
+        LocalDate endDate = startDate.with(TemporalAdjusters.lastDayOfMonth()).plusDays(1);
+
+        // Get tea selections for the month
+        List<TeaSelection> selections = teaSelectionDao.findAllByLocalDateTimeBetween(
+                startDate.atStartOfDay(),
+                endDate.atStartOfDay()
+        );
+
+        if (selections.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Map<String, Map<String, List<TeaSelection>>> deptBevMap = new HashMap<>();
+
+        for (TeaSelection selection : selections) {
+            String department = selection.getUser().getEmpDepartment();
+            String beverage = selection.getTeaOptions().getBeverageName();
+
+            if (!deptBevMap.containsKey(department)) {
+                deptBevMap.put(department, new HashMap<>());
+            }
+
+            if (!deptBevMap.get(department).containsKey(beverage)) {
+                deptBevMap.get(department).put(beverage, new ArrayList<>());
+            }
+
+            deptBevMap.get(department).get(beverage).add(selection);
+        }
+
+        // Calculate costs and create DTOs
+        List<CostByDepartmentDto> result = new ArrayList<>();
+
+        for (Map.Entry<String, Map<String, List<TeaSelection>>> deptEntry : deptBevMap.entrySet()) {
+            String department = deptEntry.getKey();
+            Map<String, List<TeaSelection>> beverageMap = deptEntry.getValue();
+
+            CostByDepartmentDto deptDto = new CostByDepartmentDto();
+            deptDto.setDeptName(department);
+
+            double totalDeptCost = 0.0;
+
+            for (Map.Entry<String, List<TeaSelection>> bevEntry : beverageMap.entrySet()) {
+                String beverage = bevEntry.getKey();
+                List<TeaSelection> bevSelections = bevEntry.getValue();
+
+                int count = bevSelections.size();
+                double unitPrice = bevSelections.get(0).getTeaOptions().getUnitPrice();
+                double cost = count * unitPrice;
+
+                CostByDepartmentDto.BeverageDetail detail = new CostByDepartmentDto.BeverageDetail();
+                detail.setCount(count);
+                detail.setCost(cost);
+
+                deptDto.getBeverageDetails().put(beverage, detail);
+                totalDeptCost += cost;
+            }
+
+            deptDto.setTotalCost(totalDeptCost);
+            result.add(deptDto);
+        }
+
+        return result;
+
     }
 
 }

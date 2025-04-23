@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public interface UserService {
@@ -24,6 +25,8 @@ public interface UserService {
     public EmployeeDto updateEmployee(String empNo, EmployeeDto employeeDto);
 
     public String deleteCustomer(String empNo);
+
+    public List<EmployeeDto> getAllEmployees();
 
 
 }

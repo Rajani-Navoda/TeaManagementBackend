@@ -4,15 +4,21 @@ import com.TeaManagement.TeaManagement.dao.RoleDao;
 import com.TeaManagement.TeaManagement.dao.UserDao;
 import com.TeaManagement.TeaManagement.dto.DepartmentDto;
 import com.TeaManagement.TeaManagement.dto.EmployeeDto;
+import com.TeaManagement.TeaManagement.dto.TeaOptionUpdateDto;
 import com.TeaManagement.TeaManagement.entity.Role;
+import com.TeaManagement.TeaManagement.entity.TeaOptions;
 import com.TeaManagement.TeaManagement.entity.User;
 import com.TeaManagement.TeaManagement.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -90,6 +96,16 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Employee not found");
         }
     }
+
+    @Override
+    public List<EmployeeDto> getAllEmployees() {
+        List<User> users = (List<User>) userDao.findAll();
+        return users.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+
 
 
     private EmployeeDto convertToDto(User user) {

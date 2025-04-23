@@ -2,6 +2,7 @@ package com.TeaManagement.TeaManagement.controller;
 
 import com.TeaManagement.TeaManagement.dto.DepartmentDto;
 import com.TeaManagement.TeaManagement.dto.EmployeeDto;
+import com.TeaManagement.TeaManagement.dto.TeaOptionUpdateDto;
 import com.TeaManagement.TeaManagement.dto.TeaOptionsDto;
 import com.TeaManagement.TeaManagement.entity.User;
 import com.TeaManagement.TeaManagement.service.UserService;
@@ -13,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 
 @RestController
 //@RequestMapping("api/v1/user")
@@ -59,6 +61,12 @@ public class UserController {
         return deletedCustomer;
     }
 
+    @GetMapping("/getAllEmployees")
+    @PreAuthorize("hasRole('Admin')")
+    public List<EmployeeDto> getAllEmployees(){
+        List<EmployeeDto> allEmployees = userService.getAllEmployees();
+        return allEmployees;
+    }
 
 
 

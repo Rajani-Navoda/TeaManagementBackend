@@ -1,9 +1,6 @@
 package com.TeaManagement.TeaManagement.controller;
 
-import com.TeaManagement.TeaManagement.dto.ActiveSessionDto;
-import com.TeaManagement.TeaManagement.dto.CountByBeverageDto;
-import com.TeaManagement.TeaManagement.dto.CountByDepartmentDto;
-import com.TeaManagement.TeaManagement.dto.TeaSelectionDto;
+import com.TeaManagement.TeaManagement.dto.*;
 import com.TeaManagement.TeaManagement.entity.enums.Teatime;
 import com.TeaManagement.TeaManagement.service.TeaSelectionService;
 import com.TeaManagement.TeaManagement.util.StandardResponse;
@@ -60,4 +57,17 @@ public class TeaSelectionController {
         return status;
     }
 
+    @GetMapping(
+            path = "/department-beverage-monthly-cost",
+            params = {"month", "year"}
+    )
+    @PreAuthorize("hasRole('Admin')")
+   public ResponseEntity<List<CostByDepartmentDto>> getDepartmentBeverageCost(
+            @RequestParam String month,
+            @RequestParam Integer year){
+        List<CostByDepartmentDto> costByDepartmentByMonth =
+                teaSelectionService.getMonthlyCostByDepartment(month, year);
+        return ResponseEntity.ok(costByDepartmentByMonth);
+
+    }
 }
