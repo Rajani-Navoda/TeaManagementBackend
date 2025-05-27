@@ -12,7 +12,9 @@ import com.TeaManagement.TeaManagement.service.TeaSelectionService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -67,7 +69,8 @@ public class TeaSelectionImpl implements TeaSelectionService {
                 findAllByTeatimeAndLocalDateTimeBetween(teaTime, startOfDay, endOfDay);
 
         if (teaSelections.isEmpty()) {
-            throw new RuntimeException("No tea selections found for teaTime: " + teaTime + " on " + currentDate);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "No tea selections found for teaTime: " + teaTime + " on " + currentDate);
         }
 
         Map<String, Long> beverageCountMap = teaSelections.stream()
